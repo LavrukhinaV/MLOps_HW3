@@ -14,4 +14,4 @@ COPY app/ .
 ENV MODEL_VERSION=v1.0.0
 
 # Запуск сервиса
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}"]
