@@ -12,6 +12,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set image name (lowercase)
+        run: |
+          echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -22,14 +26,11 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}:${{ github.sha }} \
-                       -t ghcr.io/${{ github.repository }}:${{ secrets.MODEL_VERSION }} \
-                       .
+          docker build -t ${{ env.IMAGE_NAME }}:${{ github.sha }} .
 
       - name: Push Docker image
         run: |
-          docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
-          docker push ghcr.io/${{ github.repository }}:${{ secrets.MODEL_VERSION }}
+          docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Deploy to Render via API (Deploy Hook)
         run: |
