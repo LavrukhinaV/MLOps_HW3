@@ -1,0 +1,37 @@
+name: Model Deployment
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io \
+          -u "${{ github.actor }}" --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}:${{ github.sha }} \
+                        -t ghcr.io/${{ github.repository }}:${{ secrets.MODEL_VERSION }} \
+                        .
+
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
+          docker push ghcr.io/${{ github.repository }}:${{ secrets.MODEL_VERSION }}
+
+      - name: Deploy via API
+        run: |
+          curl -X POST https://api.cloudprovider/deploy \
+            -H "Authorization: Bearer ${{ secrets.CLOUD_TOKEN }}" \
+            -d "image=ghcr.io/${{ github.repository }}:${{ secrets.MODEL_VERSION }}"

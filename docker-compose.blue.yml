@@ -1,0 +1,8 @@
+services:
+  ml_service_v1:
+    build: .
+    container_name: ml_service_v1
+    environment:
+      MODEL_VERSION: "v1.0.0"
+    ports:
+      - "8080:8080"
