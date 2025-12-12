@@ -16,22 +16,26 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Login to GitHub Container Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io \
-          -u "${{ github.actor }}" --password-stdin
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io \
+            -u "${{ github.actor }}" --password-stdin
 
       - name: Build Docker image
         run: |
           docker build -t ghcr.io/${{ github.repository }}:${{ github.sha }} \
-                        -t ghcr.io/${{ github.repository }}:${{ secrets.MODEL_VERSION }} \
-                        .
+                       -t ghcr.io/${{ github.repository }}:${{ secrets.MODEL_VERSION }} \
+                       .
 
       - name: Push Docker image
         run: |
           docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
           docker push ghcr.io/${{ github.repository }}:${{ secrets.MODEL_VERSION }}
 
-      - name: Deploy via API
+      - name: Deploy to Render via API (Deploy Hook)
         run: |
-          curl -X POST https://api.cloudprovider/deploy \
-            -H "Authorization: Bearer ${{ secrets.CLOUD_TOKEN }}" \
-            -d "image=ghcr.io/${{ github.repository }}:${{ secrets.MODEL_VERSION }}"
+          curl -fsS -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+
+      - name: Check service health
+        run: |
+          sleep 20
+          curl -fsS "https://${{ secrets.RENDER_SERVICE_URL }}/health"
