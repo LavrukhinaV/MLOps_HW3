@@ -83,7 +83,7 @@ curl http://localhost:8080/health
 * `nginx` — балансировщик трафика.
 
 #### Распределение трафика (пример)
-Начальный этап — 90% / 10%:
+Начальный этап — **90% / 10%**:
 ```
 upstream ml_backend {
     server ml_service_v1:8080 weight=90;
@@ -91,14 +91,14 @@ upstream ml_backend {
 }
 ```
 
-50% / 50%:
+**50% / 50%**:
 ```
 upstream ml_backend {
     server ml_service_v1:8080 weight=50;
     server ml_service_v2:8080 weight=50;
 }
 ```
-100% на новую версию:
+**100%** на новую версию:
 ```
 upstream ml_backend {
     server ml_service_v2:8080;
@@ -130,6 +130,8 @@ docker exec nginx_canary nginx -s reload
 
 Деплой запускается автоматически при пуше в ветку `main`.
 
+![Job](screenshots/job.png)
+
 ---
 
 ### Облачный деплой (Render)
@@ -137,9 +139,13 @@ docker exec nginx_canary nginx -s reload
 https://mlops-hw3.onrender.com/health  
 https://mlops-hw3.onrender.com/predict
 
+![Health check](screenshots/health.png)
+
+![Predict check](screenshots/predict.png)
+
 **Использование GitHub Secrets при деплое**
 
-Для обеспечения безопасности чувствительных данных и соответствия best practices, все параметры, необходимые для деплоя в облако, хранятся в GitHub Secrets и не включаются в код репозитория.
+Для обеспечения безопасности чувствительных данных и соответствия best practices, все параметры, необходимые для деплоя в облако, хранятся в **GitHub Secrets** и не включаются в код репозитория.
 
 В CI/CD pipeline используются следующие секреты:
 * `RENDER_DEPLOY_HOOK` - URL Deploy Hook в Render. Используется для запуска деплоя сервиса через HTTP API.
@@ -157,17 +163,17 @@ https://mlops-hw3.onrender.com/predict
 * отслеживать, какая версия модели развернута в текущем окружении через эндпоинт `/health`.
 
 ### Мониторинг и логирование
-* Эндпоинт /health используется для мониторинга доступности сервиса и контроля версии модели;
+* Эндпоинт `/health` используется для мониторинга доступности сервиса и контроля версии модели;
 
-* Версия модели (MODEL_VERSION) возвращается во всех ответах API;
+* Версия модели (`MODEL_VERSION`) возвращается во всех ответах API;
 
 * В приложении реализовано логирование:
 
   * старта сервиса;
 
-  * запросов /health;
+  * запросов `/health`;
 
-  * запросов /predict.
+  * запросов `/predict`.
 
 ---
 
@@ -183,3 +189,4 @@ https://mlops-hw3.onrender.com/predict
 * реальный деплой в облако через API;
 
 * мониторинг и документация.
+
