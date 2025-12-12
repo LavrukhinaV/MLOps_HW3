@@ -133,7 +133,7 @@ docker exec nginx_canary nginx -s reload
 ---
 
 ### Облачный деплой (Render)
-**Публичный URL сервиса:**
+**Публичный URL сервиса:**  
 https://mlops-hw3.onrender.com/health  
 https://mlops-hw3.onrender.com/predict
 
